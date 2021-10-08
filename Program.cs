@@ -38,7 +38,7 @@ namespace ipa_file_info
                 var requiredDeviceCapabilities = ((NSArray)plist.ObjectForKey("UIRequiredDeviceCapabilities"))?.GetArray();
 
                 // Print 'em
-                return $"{appName},{bundleId},{minIos},{sdkVersion},{version}";
+                return $"{appName},{bundleId},{minIos},{sdkVersion},{version},{path}";
             }
         }
 
@@ -52,7 +52,6 @@ namespace ipa_file_info
 
         // Useful links:
         // PList lib: https://github.com/claunia/plist-cil
-
         static void Main(string[] args)
         {
             if (args.Length <= 0)
@@ -69,7 +68,7 @@ namespace ipa_file_info
                 var path = args[0] ?? string.Empty;
                 FileAttributes attr = File.GetAttributes(path);
 
-                Console.WriteLine("Name,ID,Min iOS,SDK,App Version");
+                Console.WriteLine("Name,ID,Min iOS,SDK,App Version,Path");
 
                 if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
                 {
