@@ -12,38 +12,41 @@ namespace ipa_file_info
         private static string InfoPlistRegex = @"^Payload\/.*\.app\/Info.plist$";
         private static Regex PathMatch = new Regex(InfoPlistRegex);
 
-        private static string getInfoForIpa(string path) {
-            try
-            {
-                using (var archive = ZipFile.OpenRead(path)) {
-                    var infoPlist = archive.Entries.Where(entry => PathMatch.Match(entry.FullName).Success).FirstOrDefault();
+        private static string GetInfoForIpa(string path) {
+            using (var archive = ZipFile.OpenRead(path)) {
+                var infoPlist = archive.Entries.Where(entry => PathMatch.Match(entry.FullName).Success).FirstOrDefault();
 
-                    // Now open the stream. Have to cast to dict.
-                    var plist = (NSDictionary)PropertyListParser.Parse(infoPlist.Open());
+                // Now open the stream. Have to cast to dict.
+                var plist = (NSDictionary)PropertyListParser.Parse(infoPlist.Open());
 
-                    // Keys to read:
-                    // CFBundleName (string); app name
-                    // CFBundleIdentifier (string); bundle ID
-                    // DTSDKName (string); sdk built with?
-                    // MinimumOSVersion (string); minimum iOS version (e.g. 9.3)
-                    var appName    = plist.ObjectForKey("CFBundleName")?.ToString();
-                    var bundleId   = plist.ObjectForKey("CFBundleIdentifier")?.ToString();
-                    var sdkVersion = plist.ObjectForKey("DTSDKName")?.ToString();
-                    var minIos     = plist.ObjectForKey("MinimumOSVersion")?.ToString();
+                // Keys to read:
+                // CFBundleName (string); app name
+                // CFBundleIdentifier (string); bundle ID
+                // DTSDKName (string); sdk built with?
+                // MinimumOSVersion (string); minimum iOS version (e.g. 9.3)
+                var appName    = plist.ObjectForKey("CFBundleName")?.ToString();
+                var bundleId   = plist.ObjectForKey("CFBundleIdentifier")?.ToString();
+                var sdkVersion = plist.ObjectForKey("DTSDKName")?.ToString();
+                var minIos     = plist.ObjectForKey("MinimumOSVersion")?.ToString();
 
-                    // Below don't seem to be in all of 'em?
-                    // CFBundleShortVersionString (string); string in settings(?)
-                    // UISupportedDevices (Array of strings); devices allowed
-                    // UIRequiredDeviceCapabilities (array of strings); reqd architecture (e.g. armv7)
-                    var version    = plist.ObjectForKey("CFBundleShortVersionString")?.ToString();
-                    var supportedDevices = ((NSArray)plist.ObjectForKey("UISupportedDevices"))?.GetArray();
-                    var requiredDeviceCapabilities = ((NSArray)plist.ObjectForKey("UIRequiredDeviceCapabilities"))?.GetArray();
+                // Below don't seem to be in all of 'em?
+                // CFBundleShortVersionString (string); string in settings(?)
+                // UISupportedDevices (Array of strings); devices allowed
+                // UIRequiredDeviceCapabilities (array of strings); reqd architecture (e.g. armv7)
+                var version    = plist.ObjectForKey("CFBundleShortVersionString")?.ToString();
+                var supportedDevices = ((NSArray)plist.ObjectForKey("UISupportedDevices"))?.GetArray();
+                var requiredDeviceCapabilities = ((NSArray)plist.ObjectForKey("UIRequiredDeviceCapabilities"))?.GetArray();
 
-                    // Print 'em
-                    return $"{appName}\t{bundleId}\t{minIos}\t{sdkVersion}\t{version}";
-                }
+                // Print 'em
+                return $"{appName},{bundleId},{minIos},{sdkVersion},{version}";
+            }
+        }
+
+        private static void WriteResults(string path) {
+            try {
+                Console.WriteLine(GetInfoForIpa(path));
             } catch (Exception e) {
-                return $"Failed to process '{path}'; {e.Message}";
+                Console.Error.WriteLine($"Exception while processing {path}: {e.Message}");
             }
         }
 
@@ -62,10 +65,11 @@ namespace ipa_file_info
             // Check if path is directory or not.
             // https://stackoverflow.com/a/1395226
             try {
+                // TODO: support path ending in slash
                 var path = args[0] ?? string.Empty;
                 FileAttributes attr = File.GetAttributes(path);
 
-                Console.WriteLine("Name\t\tID\t\t\tMin iOS\tSDK\t\tApp Version");
+                Console.WriteLine("Name,ID,Min iOS,SDK,App Version");
 
                 if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
                 {
@@ -75,13 +79,13 @@ namespace ipa_file_info
                     var files = Directory.GetFiles(path, "*.ipa", SearchOption.AllDirectories);
 
                     foreach (var file in files) {
-                        Console.WriteLine(getInfoForIpa(file));
+                        WriteResults(file);
                     }
                 }
                 else
                 {
                     // Run for single file.
-                    Console.WriteLine(getInfoForIpa(path));
+                    WriteResults(path);
                 }
             } catch (System.IO.FileNotFoundException e) {
                 Console.WriteLine(e.Message);
