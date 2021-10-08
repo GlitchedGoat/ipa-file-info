@@ -28,6 +28,7 @@ namespace ipa_file_info
                 var bundleId   = plist.ObjectForKey("CFBundleIdentifier")?.ToString();
                 var sdkVersion = plist.ObjectForKey("DTSDKName")?.ToString();
                 var minIos     = plist.ObjectForKey("MinimumOSVersion")?.ToString();
+                var exeName = plist.ObjectForKey("CFBundleExecutable")?.ToString();
 
                 // Below don't seem to be in all of 'em?
                 // CFBundleShortVersionString (string); string in settings(?)
@@ -38,7 +39,7 @@ namespace ipa_file_info
                 var requiredDeviceCapabilities = ((NSArray)plist.ObjectForKey("UIRequiredDeviceCapabilities"))?.GetArray();
 
                 // Print 'em
-                return $"{appName},{bundleId},{minIos},{sdkVersion},{version},{path}";
+                return $"{appName},{bundleId},{exeName},{minIos},{sdkVersion},{version},{path}";
             }
         }
 
@@ -68,12 +69,10 @@ namespace ipa_file_info
                 var path = args[0] ?? string.Empty;
                 FileAttributes attr = File.GetAttributes(path);
 
-                Console.WriteLine("Name,ID,Min iOS,SDK,App Version,Path");
+                Console.WriteLine("Name,ID,EXE Name,Min iOS,SDK,App Version,Path");
 
                 if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
                 {
-                    Console.WriteLine($"Processing directory: {path}");
-
                     // Search directory, then run for each.
                     var files = Directory.GetFiles(path, "*.ipa", SearchOption.AllDirectories);
 
