@@ -1,5 +1,5 @@
 # ipa-file-info
-Simple util to read metadata from an ipa (iOS App package). As written, will put the following in the output:
+Simple util to read metadata from an ipa (iOS App package) or a folder containing ipa's. As written, will put the following in the output:
 - App name
 - App bundle ID
 - Binary name
