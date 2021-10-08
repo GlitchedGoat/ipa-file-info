@@ -69,8 +69,14 @@ namespace ipa_file_info
 
                 if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
                 {
+                    Console.WriteLine($"Processing directory: {path}");
+
                     // Search directory, then run for each.
-                    // TODO
+                    var files = Directory.GetFiles(path, "*.ipa", SearchOption.AllDirectories);
+
+                    foreach (var file in files) {
+                        Console.WriteLine(getInfoForIpa(file));
+                    }
                 }
                 else
                 {
