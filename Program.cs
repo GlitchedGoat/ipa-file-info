@@ -34,9 +34,9 @@ namespace ipa_file_info
                 // CFBundleShortVersionString (string); string in settings(?)
                 // UISupportedDevices (Array of strings); devices allowed
                 // UIRequiredDeviceCapabilities (array of strings); reqd architecture (e.g. armv7)
-                var version    = plist.ObjectForKey("CFBundleShortVersionString")?.ToString();
-                var supportedDevices = ((NSArray)plist.ObjectForKey("UISupportedDevices"))?.GetArray();
-                var requiredDeviceCapabilities = ((NSArray)plist.ObjectForKey("UIRequiredDeviceCapabilities"))?.GetArray();
+                // var supportedDevices = ((NSArray)plist.ObjectForKey("UISupportedDevices"))?.GetArray();
+                // var requiredDeviceCapabilities = ((NSArray)plist.ObjectForKey("UIRequiredDeviceCapabilities"))?.GetArray();
+                var version = plist.ObjectForKey("CFBundleShortVersionString")?.ToString();
 
                 // Print 'em
                 return $"{appName},{bundleId},{exeName},{minIos},{sdkVersion},{version},{path}";
@@ -65,7 +65,6 @@ namespace ipa_file_info
             // Check if path is directory or not.
             // https://stackoverflow.com/a/1395226
             try {
-                // TODO: support path ending in slash
                 var path = args[0] ?? string.Empty;
                 FileAttributes attr = File.GetAttributes(path);
 
