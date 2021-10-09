@@ -57,7 +57,7 @@ namespace ipa_file_info
         {
             if (args.Length <= 0)
             {
-                Console.WriteLine("IPA Info Util, by GlitechedGoat\nPlease provide an IPA file, or folder to find IPA files in.");
+                Console.WriteLine("IPA Info Util, by GlitchedGoat\nPlease provide an IPA file, or folder to find IPA files in.");
                 return;
             }
 
