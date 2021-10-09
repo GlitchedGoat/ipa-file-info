@@ -18,7 +18,7 @@ Put the built exe in your `PATH` and pass it either
 # Output
 Default output is comma-delimited output to `STDOUT`, with errors written to `STDERR`.
 
-I recommend redirecting the output to a file, e.g. `ipa-file-info.exe > info.csv`
+I recommend redirecting the output to a file, e.g. `ipa-file-info.exe test.ipa > info.csv`
 
 # Building
 Do the typical `dotnet restore && dotnet build`. If you'd like to package it as a release binary (single-file):
