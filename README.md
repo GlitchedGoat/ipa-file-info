@@ -20,6 +20,12 @@ Default output is comma-delimited output to `STDOUT`, with errors written to `ST
 
 I recommend redirecting the output to a file, e.g. `ipa-file-info.exe test.ipa > info.csv`
 
+## Example Output
+```
+Name,ID,EXE Name,Min iOS,SDK,App Version,Path
+midimittr,com.matt.MIDI-LE,midimittr,10.2,iphoneos14.5,2.2,/tmp/midimittr 2.2.ipa
+```
+
 # Building
 Do the typical `dotnet restore && dotnet build`. If you'd like to package it as a release binary (single-file):
 
